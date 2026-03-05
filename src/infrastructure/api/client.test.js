@@ -1,153 +1,118 @@
 /**
- * Tests para el cliente HTTP central (SMAPP-9).
+ * Tests para el cliente HTTP central basado en Axios (SMAPP-9).
  *
  * Criterios de aceptación:
- * - baseURL construida desde variables de entorno
- * - credentials: 'include' en cada petición
+ * - baseURL construida desde variable de entorno VITE_API_URL
+ * - withCredentials: true en cada petición
  * - 401 fuera de /login redirige a /login
  * - 401 en /login NO redirige (evita recarga de página)
- * - Errores HTTP lanzan Error con el mensaje del servidor
- * - 204 devuelve null
- * - get, post y put usan el método HTTP correcto
+ * - Errores HTTP distintos de 401 se rechazan normalmente
+ * - get, post y put devuelven response.data directamente
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { get, post, put } from './client.js';
+import axios from 'axios';
 
-/** Crea un Response mock con el status y body indicados. */
-function mockResponse(status, body = null, ok = true) {
-  return {
-    status,
-    ok,
-    statusText: 'Error',
-    json: vi.fn().mockResolvedValue(body),
-  };
-}
+let errorInterceptor;
+
+const mockInstance = {
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  interceptors: {
+    response: {
+      use: vi.fn((onSuccess, onError) => {
+        errorInterceptor = onError;
+      }),
+    },
+  },
+};
+
+vi.mock('axios', () => ({
+  default: {
+    create: vi.fn(() => mockInstance),
+  },
+}));
+
+const { get, post, put } = await import('./client.js');
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', vi.fn());
-  // Restaurar pathname a raíz por defecto
-  Object.defineProperty(window, 'location', {
-    writable: true,
-    value: { pathname: '/', href: '' },
+  mockInstance.get.mockReset();
+  mockInstance.post.mockReset();
+  mockInstance.put.mockReset();
+  delete window.location;
+  window.location = { pathname: '/', href: '' };
+});
+
+describe('axios.create', () => {
+  it('se llama con baseURL desde VITE_API_URL y withCredentials true', () => {
+    expect(axios.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        baseURL: expect.any(String),
+        withCredentials: true,
+      }),
+    );
   });
 });
 
 describe('get', () => {
-  it('llama a fetch con method GET y credentials include', async () => {
-    global.fetch.mockResolvedValue(mockResponse(200, { data: 1 }));
-
-    await get('/users');
-
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/users'),
-      expect.objectContaining({
-        method: 'GET',
-        credentials: 'include',
-      }),
-    );
-  });
-
-  it('devuelve los datos de la respuesta JSON', async () => {
-    const payload = { id: 1, name: 'Ana' };
-    global.fetch.mockResolvedValue(mockResponse(200, payload));
+  it('llama a instance.get con el endpoint y devuelve data', async () => {
+    const payload = { id: 1 };
+    mockInstance.get.mockResolvedValue({ data: payload });
 
     const result = await get('/users/1');
 
+    expect(mockInstance.get).toHaveBeenCalledWith('/users/1', {});
     expect(result).toEqual(payload);
   });
 });
 
 describe('post', () => {
-  it('llama a fetch con method POST y body serializado', async () => {
-    global.fetch.mockResolvedValue(mockResponse(201, { id: 2 }));
+  it('llama a instance.post con endpoint y body, devuelve data', async () => {
     const body = { name: 'Ana' };
+    const payload = { id: 2, name: 'Ana' };
+    mockInstance.post.mockResolvedValue({ data: payload });
 
-    await post('/users', body);
+    const result = await post('/users', body);
 
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/users'),
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify(body),
-        credentials: 'include',
-      }),
-    );
+    expect(mockInstance.post).toHaveBeenCalledWith('/users', body, {});
+    expect(result).toEqual(payload);
   });
 });
 
 describe('put', () => {
-  it('llama a fetch con method PUT y body serializado', async () => {
-    global.fetch.mockResolvedValue(mockResponse(200, { id: 1, name: 'Bob' }));
+  it('llama a instance.put con endpoint y body, devuelve data', async () => {
     const body = { name: 'Bob' };
+    const payload = { id: 1, name: 'Bob' };
+    mockInstance.put.mockResolvedValue({ data: payload });
 
-    await put('/users/1', body);
+    const result = await put('/users/1', body);
 
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/users/1'),
-      expect.objectContaining({
-        method: 'PUT',
-        body: JSON.stringify(body),
-        credentials: 'include',
-      }),
-    );
+    expect(mockInstance.put).toHaveBeenCalledWith('/users/1', body, {});
+    expect(result).toEqual(payload);
   });
 });
 
 describe('interceptor 401', () => {
   it('redirige a /login cuando recibe 401 y no está en /login', async () => {
     window.location.pathname = '/dashboard';
-    global.fetch.mockResolvedValue(mockResponse(401, null, false));
 
-    await get('/protected');
+    await errorInterceptor({ response: { status: 401 } });
 
     expect(window.location.href).toBe('/login');
   });
 
   it('NO redirige cuando recibe 401 estando ya en /login', async () => {
     window.location.pathname = '/login';
-    global.fetch.mockResolvedValue(mockResponse(401, null, false));
+    const error = { response: { status: 401 } };
 
-    await post('/auth/login', { email: 'a@b.com', password: '123' });
-
+    await expect(errorInterceptor(error)).rejects.toEqual(error);
     expect(window.location.href).not.toBe('/login');
   });
-});
 
-describe('manejo de errores HTTP', () => {
-  it('lanza Error con el mensaje del servidor en respuestas no ok', async () => {
-    global.fetch.mockResolvedValue({
-      status: 500,
-      ok: false,
-      statusText: 'Internal Server Error',
-      json: vi.fn().mockResolvedValue({ message: 'Error interno del servidor' }),
-    });
+  it('rechaza el error para status distinto de 401', async () => {
+    const error = { response: { status: 500 } };
 
-    await expect(get('/fail')).rejects.toThrow('Error interno del servidor');
-  });
-
-  it('lanza Error con statusText si el body no es JSON válido', async () => {
-    global.fetch.mockResolvedValue({
-      status: 503,
-      ok: false,
-      statusText: 'Service Unavailable',
-      json: vi.fn().mockRejectedValue(new Error('not json')),
-    });
-
-    await expect(get('/fail')).rejects.toThrow('Service Unavailable');
-  });
-});
-
-describe('respuesta 204', () => {
-  it('devuelve null cuando el status es 204', async () => {
-    global.fetch.mockResolvedValue({
-      status: 204,
-      ok: true,
-      json: vi.fn(),
-    });
-
-    const result = await get('/users/1');
-
-    expect(result).toBeNull();
+    await expect(errorInterceptor(error)).rejects.toEqual(error);
   });
 });

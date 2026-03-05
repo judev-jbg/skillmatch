@@ -1,54 +1,38 @@
 /**
- * Cliente HTTP central de la aplicación.
+ * Cliente HTTP central de la aplicación basado en Axios.
  * Configura baseURL, cookies httpOnly y manejo global de errores.
  */
 
-const BASE_URL = `${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`;
+import axios from 'axios';
 
-/**
- * Realiza una petición HTTP genérica.
- *
- * @param {string} endpoint - Ruta relativa al baseURL
- * @param {RequestInit} options - Opciones de fetch
- * @returns {Promise<any>} Datos de la respuesta parseados como JSON
- * @throws {Error} Si la respuesta no es exitosa
- */
-async function request(endpoint, options = {}) {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  if (response.status === 401) {
-    if (window.location.pathname !== '/login') {
+client.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
       window.location.href = '/login';
+      return Promise.resolve();
     }
-    return;
-  }
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: response.statusText }));
-    throw new Error(error.message || 'Error en la petición');
-  }
-
-  if (response.status === 204) return null;
-
-  return response.json();
-}
+    return Promise.reject(error);
+  },
+);
 
 /**
  * Realiza una petición GET.
  *
  * @param {string} endpoint - Ruta relativa al baseURL
- * @param {RequestInit} [options] - Opciones adicionales de fetch
- * @returns {Promise<any>}
+ * @param {import('axios').AxiosRequestConfig} [config] - Configuración adicional de Axios
+ * @returns {Promise<any>} Datos de la respuesta
  */
-export function get(endpoint, options = {}) {
-  return request(endpoint, { ...options, method: 'GET' });
+export function get(endpoint, config = {}) {
+  return client.get(endpoint, config).then((res) => res.data);
 }
 
 /**
@@ -56,11 +40,11 @@ export function get(endpoint, options = {}) {
  *
  * @param {string} endpoint - Ruta relativa al baseURL
  * @param {object} body - Cuerpo de la petición
- * @param {RequestInit} [options] - Opciones adicionales de fetch
- * @returns {Promise<any>}
+ * @param {import('axios').AxiosRequestConfig} [config] - Configuración adicional de Axios
+ * @returns {Promise<any>} Datos de la respuesta
  */
-export function post(endpoint, body, options = {}) {
-  return request(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) });
+export function post(endpoint, body, config = {}) {
+  return client.post(endpoint, body, config).then((res) => res.data);
 }
 
 /**
@@ -68,9 +52,9 @@ export function post(endpoint, body, options = {}) {
  *
  * @param {string} endpoint - Ruta relativa al baseURL
  * @param {object} body - Cuerpo de la petición
- * @param {RequestInit} [options] - Opciones adicionales de fetch
- * @returns {Promise<any>}
+ * @param {import('axios').AxiosRequestConfig} [config] - Configuración adicional de Axios
+ * @returns {Promise<any>} Datos de la respuesta
  */
-export function put(endpoint, body, options = {}) {
-  return request(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) });
+export function put(endpoint, body, config = {}) {
+  return client.put(endpoint, body, config).then((res) => res.data);
 }
