@@ -1,24 +1,61 @@
 /**
  * Store global de autenticación con Zustand.
- * Expone el usuario actual y las acciones setUser/clearUser.
+ * Gestiona el ciclo de vida de la sesión: login, logout e hidratación.
  */
 
 import { create } from 'zustand';
+import { loginUseCase } from '../../application/auth/loginUseCase.js';
+import { getMeRequest } from '../../infrastructure/api/userApi.js';
 
 const useAuthStore = create((set) => ({
+  /** @type {{ id: number, name: string, email: string, role: string }|null} */
   user: null,
 
-  /**
-   * Establece el usuario autenticado en el store.
-   *
-   * @param {object} user
-   */
-  setUser: (user) => set({ user }),
+  /** Indica si hay una operación de autenticación en curso */
+  isLoading: false,
 
   /**
-   * Elimina el usuario del store (cierre de sesión).
+   * Inicia sesión con las credenciales dadas.
+   * Guarda el usuario en el store si el login es exitoso.
+   *
+   * @param {{ email: string, password: string }} credentials
+   * @returns {Promise<void>}
+   * @throws {Error} Si las credenciales son inválidas
    */
-  clearUser: () => set({ user: null }),
+  login: async (credentials) => {
+    set({ isLoading: true });
+    try {
+      const user = await loginUseCase(credentials);
+      set({ user, isLoading: false });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  /**
+   * Cierra la sesión limpiando el estado y redirigiendo a /login.
+   * La cookie JWT caduca en el navegador al no renovarse.
+   */
+  logout: () => {
+    set({ user: null, isLoading: false });
+    window.location.href = '/login';
+  },
+
+  /**
+   * Restaura la sesión al montar la app llamando a GET /users/me.
+   * Si la cookie JWT es válida, recupera el usuario sin requerir login.
+   * Si falla (401 o error de red), limpia el estado silenciosamente.
+   */
+  hydrate: async () => {
+    set({ isLoading: true });
+    try {
+      const user = await getMeRequest();
+      set({ user, isLoading: false });
+    } catch {
+      set({ user: null, isLoading: false });
+    }
+  },
 }));
 
 export default useAuthStore;
