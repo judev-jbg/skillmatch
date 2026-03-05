@@ -1,13 +1,14 @@
 React + Vite (Javascript -> jsx)
 CSS puro (para personalizacion maxima)
-Para el estado Zustand, para proteccion y navegacion con React router DOM y Axios para la comunicion con la API
+Para el estado Zustand, para proteccion y navegacion con React router DOM y Axios para la comunicacion con la API
 El backend gestionara los token jwt httponly cookie
 
 Arquitectura hexagonal pragmatica
+
 ```
 skillmatch/
 │
-├── .env # Variables de entorno (VITE_API_URL)
+├── .env # Variables de entorno
 ├── .env.example
 ├── index.html
 ├── vite.config.js
