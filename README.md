@@ -4,7 +4,7 @@ Para el estado Zustand, para proteccion y navegacion con React router DOM y Axio
 El backend gestionara los token jwt httponly cookie
 
 Arquitectura hexagonal pragmatica
-
+```
 skillmatch/
 │
 ├── .env # Variables de entorno (VITE_API_URL)
@@ -97,3 +97,4 @@ skillmatch/
 ├── application/ # ApplicationCard, CandidateList...
 ├── assignment/ # AssignmentDetail, DeliverableForm...
 └── review/ # ReviewCard, StarRating...
+```
