@@ -156,4 +156,36 @@ describe('errores de API', () => {
 
     expect(screen.getByRole('button', { name: /iniciar sesión/i })).toBeDisabled();
   });
+
+  it('muestra banner de sin conexión y cambia el botón a Reintentar cuando el backend no responde (error de red)', async () => {
+    mockLogin.mockRejectedValue(new Error('Network Error'));
+    await renderLogin();
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/email/i), 'ana@test.com');
+    await user.type(screen.getByLabelText(/contraseña/i), '123456');
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
+
+    await screen.findByRole('status');
+    expect(screen.getByRole('status')).toHaveTextContent(/sin conexión/i);
+    expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument();
+  });
+
+  it('oculta el banner de sin conexión al recuperar la conexión (submit exitoso tras error de red)', async () => {
+    mockLogin
+      .mockRejectedValueOnce(new Error('Network Error'))
+      .mockImplementationOnce(() => mockStore({ user: { role: 'student' } }));
+    await renderLogin();
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/email/i), 'ana@test.com');
+    await user.type(screen.getByLabelText(/contraseña/i), '123456');
+    await user.click(screen.getByRole('button', { name: /iniciar sesión/i }));
+
+    await screen.findByRole('status');
+
+    await user.click(screen.getByRole('button', { name: /reintentar/i }));
+
+    await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+  });
 });
