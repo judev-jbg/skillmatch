@@ -17,12 +17,9 @@ beforeEach(() => {
 });
 
 describe('applicationApi', () => {
-  it('createApplication llama a POST /applications con project_id y student_id', () => {
-    createApplication('proj-1', 'student-1');
-    expect(post).toHaveBeenCalledWith('/applications', {
-      project_id: 'proj-1',
-      student_id: 'student-1',
-    });
+  it('createApplication llama a POST /applications con project_id (student inferido del JWT)', () => {
+    createApplication('proj-1');
+    expect(post).toHaveBeenCalledWith('/applications', { project_id: 'proj-1' });
   });
 
   it('getApplicationsByProject llama a GET /applications con project_id como query param', () => {
