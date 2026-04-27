@@ -21,14 +21,22 @@ vi.mock('../../infrastructure/api/userApi.js', () => ({
   getMeRequest: vi.fn(),
 }));
 
+vi.mock('../../infrastructure/api/authApi.js', () => ({
+  loginRequest: vi.fn(),
+  registerRequest: vi.fn(),
+  logoutRequest: vi.fn(),
+}));
+
 const { loginUseCase } = await import('../../application/auth/loginUseCase.js');
 const { getMeRequest } = await import('../../infrastructure/api/userApi.js');
+const { logoutRequest } = await import('../../infrastructure/api/authApi.js');
 const { default: useAuthStore } = await import('./useAuthStore.jsx');
 
 const mockUser = { id: 1, name: 'Ana', email: 'ana@test.com', role: 'student' };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  logoutRequest.mockResolvedValue({});
   useAuthStore.setState({ user: null, isLoading: false });
   delete window.location;
   window.location = { pathname: '/', href: '' };
@@ -75,12 +83,26 @@ describe('login', () => {
 });
 
 describe('logout', () => {
-  it('limpia el usuario y redirige a /login', () => {
+  it('llama a logoutRequest, limpia el usuario y redirige a /login', async () => {
     useAuthStore.setState({ user: mockUser });
     const { result } = renderHook(() => useAuthStore());
 
-    act(() => {
-      result.current.logout();
+    await act(async () => {
+      await result.current.logout();
+    });
+
+    expect(logoutRequest).toHaveBeenCalledTimes(1);
+    expect(result.current.user).toBeNull();
+    expect(window.location.href).toBe('/login');
+  });
+
+  it('limpia el usuario y redirige aunque logoutRequest falle', async () => {
+    logoutRequest.mockRejectedValueOnce(new Error('Network Error'));
+    useAuthStore.setState({ user: mockUser });
+    const { result } = renderHook(() => useAuthStore());
+
+    await act(async () => {
+      await result.current.logout();
     });
 
     expect(result.current.user).toBeNull();

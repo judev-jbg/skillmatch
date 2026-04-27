@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { loginUseCase } from '../../application/auth/loginUseCase.js';
 import { getMeRequest } from '../../infrastructure/api/userApi.js';
+import { logoutRequest } from '../../infrastructure/api/authApi.js';
 
 const useAuthStore = create((set) => ({
   /** @type {{ id: number, name: string, email: string, role: string }|null} */
@@ -34,10 +35,16 @@ const useAuthStore = create((set) => ({
   },
 
   /**
-   * Cierra la sesión limpiando el estado y redirigiendo a /login.
-   * La cookie JWT caduca en el navegador al no renovarse.
+   * Cierra la sesión llamando al backend para limpiar la cookie HttpOnly,
+   * luego limpia el store y redirige a /login.
+   * Si el backend falla (red caída) igualmente limpia el estado local.
    */
-  logout: () => {
+  logout: async () => {
+    try {
+      await logoutRequest();
+    } catch {
+      // silencioso: el estado local se limpia igualmente
+    }
     set({ user: null, isLoading: false });
     window.location.href = '/login';
   },
