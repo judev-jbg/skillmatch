@@ -20,6 +20,7 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(false);
 
   if (user) return <Navigate to={ROLE_HOME[user.role] ?? '/login'} replace />;
 
@@ -32,20 +33,32 @@ function LoginPage() {
 
     try {
       await login({ email, password });
+      setOffline(false);
       const role = useAuthStore.getState().user?.role;
       navigate(ROLE_HOME[role] ?? '/login', { replace: true });
     } catch (err) {
-      setError(
-        err?.response?.status === 401
-          ? 'Credenciales inválidas'
-          : 'Error al iniciar sesión',
-      );
+      if (!err?.response) {
+        setOffline(true);
+      } else {
+        setOffline(false);
+        setError(
+          err.response.status === 401
+            ? 'Credenciales inválidas'
+            : 'Error al iniciar sesión',
+        );
+      }
     }
   }
 
   return (
     <main>
       <h1>Iniciar sesión</h1>
+
+      {offline && (
+        <p role="status">
+          Sin conexión con el servidor. Comprueba que el backend esté activo.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} noValidate>
         <div>
@@ -73,7 +86,7 @@ function LoginPage() {
         {error && <p role="alert">{error}</p>}
 
         <button type="submit" disabled={isLoading}>
-          Iniciar sesión
+          {offline ? 'Reintentar' : 'Iniciar sesión'}
         </button>
       </form>
     </main>
