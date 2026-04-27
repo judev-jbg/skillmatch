@@ -58,3 +58,14 @@ export function post(endpoint, body, config = {}) {
 export function put(endpoint, body, config = {}) {
   return client.put(endpoint, body, config).then((res) => res.data);
 }
+
+/**
+ * Realiza una petición DELETE.
+ *
+ * @param {string} endpoint - Ruta relativa al baseURL
+ * @param {import('axios').AxiosRequestConfig} [config] - Configuración adicional de Axios
+ * @returns {Promise<any>} Datos de la respuesta
+ */
+export function del(endpoint, config = {}) {
+  return client.delete(endpoint, config).then((res) => res.data);
+}
