@@ -23,3 +23,12 @@ export function loginRequest(credentials) {
 export function registerRequest(data) {
   return post('/auth/register', data);
 }
+
+/**
+ * Llama a POST /auth/logout para que el backend limpie la cookie HttpOnly.
+ *
+ * @returns {Promise<void>}
+ */
+export function logoutRequest() {
+  return post('/auth/logout', {});
+}
