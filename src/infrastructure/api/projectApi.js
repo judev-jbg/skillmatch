@@ -4,6 +4,10 @@ export function getAllProjects(filters = {}) {
   return get('/projects', { params: filters });
 }
 
+export function getOwnProjects(filters = {}) {
+  return get('/projects/me', { params: filters });
+}
+
 export function getProjectById(id) {
   return get(`/projects/${id}`);
 }
