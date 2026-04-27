@@ -15,6 +15,7 @@ const StudentLayout = lazy(() => import('../layouts/StudentLayout'));
 const NgoLayout = lazy(() => import('../layouts/NgoLayout'));
 const AdminLayout = lazy(() => import('../layouts/AdminLayout'));
 const StudentProfilePage = lazy(() => import('../pages/student/StudentProfilePage'));
+const ProjectsListPage = lazy(() => import('../pages/student/ProjectsListPage'));
 const NgoProfilePage = lazy(() => import('../pages/ngo/NgoProfilePage'));
 
 /** Dashboard de inicio por rol */
@@ -66,6 +67,7 @@ export function AppRoutes({
   Ngo = NgoLayout,
   Admin = AdminLayout,
   StudentProfile = StudentProfilePage,
+  ProjectsList = ProjectsListPage,
   NgoProfile = NgoProfilePage,
 } = {}) {
   return (
@@ -85,6 +87,7 @@ export function AppRoutes({
           </ProtectedRoute>
         }
       >
+        <Route path="projects" element={<ProjectsList />} />
         <Route path="profile" element={<StudentProfile />} />
       </Route>
 
