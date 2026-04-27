@@ -5,14 +5,13 @@
 import { get, post, put } from './client.js';
 
 /**
- * Crea una aplicación de un estudiante a un proyecto.
+ * Crea una aplicación del estudiante autenticado a un proyecto.
  *
  * @param {string} projectId - ID del proyecto
- * @param {string} studentId - ID del estudiante
  * @returns {Promise<object>} Aplicación creada
  */
-export function createApplication(projectId, studentId) {
-  return post('/applications', { project_id: projectId, student_id: studentId });
+export function createApplication(projectId) {
+  return post('/applications', { project_id: projectId });
 }
 
 /**
