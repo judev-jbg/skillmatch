@@ -58,6 +58,7 @@ lerna-debug.log*
 .turbo
 .vite/
 .claude/
+CLAUDE.md
 
 # Archivos de coverage de tests
 coverage
@@ -102,4 +103,4 @@ temp/
 *.tmp
 *.temp
 *local.md
-*local.sql
+*local.sql*.msi
