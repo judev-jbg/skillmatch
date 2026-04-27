@@ -18,6 +18,8 @@ const StudentProfilePage = lazy(() => import('../pages/student/StudentProfilePag
 const ProjectsListPage = lazy(() => import('../pages/student/ProjectsListPage'));
 const ProjectDetailPage = lazy(() => import('../pages/student/ProjectDetailPage'));
 const NgoProfilePage = lazy(() => import('../pages/ngo/NgoProfilePage'));
+const NgoProjectsPage = lazy(() => import('../pages/ngo/NgoProjectsPage'));
+const NgoProjectFormPage = lazy(() => import('../pages/ngo/NgoProjectFormPage'));
 
 /** Dashboard de inicio por rol */
 export const ROLE_HOME = {
@@ -71,6 +73,8 @@ export function AppRoutes({
   ProjectsList = ProjectsListPage,
   ProjectDetail = ProjectDetailPage,
   NgoProfile = NgoProfilePage,
+  NgoProjects = NgoProjectsPage,
+  NgoProjectForm = NgoProjectFormPage,
 } = {}) {
   return (
     <Routes>
@@ -105,6 +109,9 @@ export function AppRoutes({
           </ProtectedRoute>
         }
       >
+        <Route path="projects" element={<NgoProjects />} />
+        <Route path="projects/new" element={<NgoProjectForm />} />
+        <Route path="projects/:id/edit" element={<NgoProjectForm />} />
         <Route path="profile" element={<NgoProfile />} />
       </Route>
 
