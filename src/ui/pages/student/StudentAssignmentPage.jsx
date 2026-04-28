@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getAssignmentById, acceptAssignment } from '../../../infrastructure/api/assignmentApi.js';
 import { getDeliverablesByAssignment, startDeliverable, submitDeliverable } from '../../../infrastructure/api/deliverableApi.js';
+import { downloadCertificate } from '../../../infrastructure/api/certificateApi.js';
 
 function DeliverableItem({ deliverable, onStart, onSubmit }) {
   const [fileUrl, setFileUrl] = useState('');
@@ -39,6 +40,7 @@ function StudentAssignmentPage() {
   const [assignment, setAssignment] = useState(null);
   const [deliverables, setDeliverables] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [certError, setCertError] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -63,6 +65,21 @@ function StudentAssignmentPage() {
     );
   }
 
+  async function handleDownloadCertificate() {
+    setCertError('');
+    try {
+      const blob = await downloadCertificate(assignment.certificate_id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'certificado.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setCertError('Error al descargar el certificado. Intenta de nuevo.');
+    }
+  }
+
   async function handleSubmit(deliverableId, fileUrl) {
     const updated = await submitDeliverable(deliverableId, fileUrl);
     setDeliverables((prev) =>
@@ -80,6 +97,11 @@ function StudentAssignmentPage() {
       {assignment?.project_status === 'assigned' && (
         <button onClick={handleAccept}>Aceptar</button>
       )}
+
+      {assignment?.project_status === 'completed' && assignment?.certificate_id && (
+        <button onClick={handleDownloadCertificate}>Descargar certificado</button>
+      )}
+      {certError && <p role="alert">{certError}</p>}
 
       <section>
         <h2>Entregables</h2>
