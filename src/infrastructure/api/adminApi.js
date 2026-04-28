@@ -1,4 +1,4 @@
-import { post, put, del } from './client.js';
+import { get, post, put, del } from './client.js';
 
 export function createSkill(data) {
   return post('/admin/skills', data);
@@ -13,5 +13,9 @@ export function deleteSkill(id) {
 }
 
 export function verifyNgo(userId) {
-  return put(`/admin/ngos/${userId}/verify`, {});
+  return put(`/admin/verify-ngo/${userId}`, {});
+}
+
+export function getUnverifiedNgos() {
+  return get('/admin/ngos');
 }

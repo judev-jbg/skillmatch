@@ -25,6 +25,7 @@ const NgoProjectAssignmentPage = lazy(() => import('../pages/ngo/NgoProjectAssig
 const NgoDeliverablesPage = lazy(() => import('../pages/ngo/NgoDeliverablesPage'));
 const StudentApplicationsPage = lazy(() => import('../pages/student/StudentApplicationsPage'));
 const StudentAssignmentPage = lazy(() => import('../pages/student/StudentAssignmentPage'));
+const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
 
 /** Dashboard de inicio por rol */
 export const ROLE_HOME = {
@@ -85,6 +86,7 @@ export function AppRoutes({
   NgoDeliverables = NgoDeliverablesPage,
   StudentApplications = StudentApplicationsPage,
   StudentAssignment = StudentAssignmentPage,
+  AdminDashboard = AdminDashboardPage,
 } = {}) {
   return (
     <Routes>
@@ -132,7 +134,7 @@ export function AppRoutes({
 
       {/* Rutas privadas — admin */}
       <Route
-        path="/admin/*"
+        path="/admin"
         element={
           <ProtectedRoute>
             <RoleRoute role="admin">
@@ -140,7 +142,10 @@ export function AppRoutes({
             </RoleRoute>
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+      </Route>
 
       {/* Raíz → login */}
       <Route path="/" element={<Navigate to="/login" replace />} />
