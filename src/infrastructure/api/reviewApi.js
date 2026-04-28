@@ -5,5 +5,5 @@ export function createReview(data) {
 }
 
 export function getReviewsByUser(userId) {
-  return get('/reviews', { params: { user_id: userId } });
+  return get(`/reviews/${userId}`);
 }
