@@ -34,3 +34,12 @@ export function getApplicationsByProject(projectId) {
 export function updateApplicationStatus(id, status) {
   return put(`/applications/${id}`, { status });
 }
+
+/**
+ * Obtiene las aplicaciones del estudiante autenticado.
+ *
+ * @returns {Promise<object[]>} Lista de aplicaciones con título y estado del proyecto
+ */
+export function getOwnApplications() {
+  return get('/applications/me');
+}
