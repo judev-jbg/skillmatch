@@ -23,6 +23,7 @@ const NgoProjectFormPage = lazy(() => import('../pages/ngo/NgoProjectFormPage'))
 const NgoProjectCandidatesPage = lazy(() => import('../pages/ngo/NgoProjectCandidatesPage'));
 const NgoProjectAssignmentPage = lazy(() => import('../pages/ngo/NgoProjectAssignmentPage'));
 const StudentApplicationsPage = lazy(() => import('../pages/student/StudentApplicationsPage'));
+const StudentAssignmentPage = lazy(() => import('../pages/student/StudentAssignmentPage'));
 
 /** Dashboard de inicio por rol */
 export const ROLE_HOME = {
@@ -81,6 +82,7 @@ export function AppRoutes({
   NgoProjectCandidates = NgoProjectCandidatesPage,
   NgoProjectAssignment = NgoProjectAssignmentPage,
   StudentApplications = StudentApplicationsPage,
+  StudentAssignment = StudentAssignmentPage,
 } = {}) {
   return (
     <Routes>
@@ -102,6 +104,7 @@ export function AppRoutes({
         <Route path="projects" element={<ProjectsList />} />
         <Route path="projects/:id" element={<ProjectDetail />} />
         <Route path="applications" element={<StudentApplications />} />
+        <Route path="assignments/:id" element={<StudentAssignment />} />
         <Route path="profile" element={<StudentProfile />} />
       </Route>
 

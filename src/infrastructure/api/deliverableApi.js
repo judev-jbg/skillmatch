@@ -16,8 +16,8 @@ export function startDeliverable(id) {
   return put(`/deliverables/${id}/start`, {});
 }
 
-export function submitDeliverable(id, file) {
-  return put(`/deliverables/${id}/submit`, { file });
+export function submitDeliverable(id, fileUrl, comment) {
+  return put(`/deliverables/${id}/submit`, { file_url: fileUrl, ...(comment && { comment }) });
 }
 
 export function reviewDeliverable(id, data) {
