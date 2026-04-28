@@ -32,3 +32,11 @@ export function registerRequest(data) {
 export function logoutRequest() {
   return post('/auth/logout', {});
 }
+
+export function forgotPasswordRequest(email) {
+  return post('/auth/forgot-password', { email });
+}
+
+export function resetPasswordRequest(token, password) {
+  return post('/auth/reset-password', { token, password });
+}

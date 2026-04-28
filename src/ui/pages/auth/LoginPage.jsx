@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import useAuthStore from '../../hooks/useAuthStore';
 import { ROLE_HOME } from '../../router/AppRouter';
 
@@ -89,6 +89,7 @@ function LoginPage() {
           {offline ? 'Reintentar' : 'Iniciar sesión'}
         </button>
       </form>
+      <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
     </main>
   );
 }

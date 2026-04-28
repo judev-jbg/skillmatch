@@ -26,6 +26,8 @@ const NgoDeliverablesPage = lazy(() => import('../pages/ngo/NgoDeliverablesPage'
 const StudentApplicationsPage = lazy(() => import('../pages/student/StudentApplicationsPage'));
 const StudentAssignmentPage = lazy(() => import('../pages/student/StudentAssignmentPage'));
 const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
+const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 
 /** Dashboard de inicio por rol */
 export const ROLE_HOME = {
@@ -87,12 +89,16 @@ export function AppRoutes({
   StudentApplications = StudentApplicationsPage,
   StudentAssignment = StudentAssignmentPage,
   AdminDashboard = AdminDashboardPage,
+  ForgotPassword = ForgotPasswordPage,
+  ResetPassword = ResetPasswordPage,
 } = {}) {
   return (
     <Routes>
       {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Rutas privadas — estudiante */}
       <Route
