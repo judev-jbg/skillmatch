@@ -35,7 +35,7 @@ vi.mock('axios', () => ({
   },
 }));
 
-const { get, post, put } = await import('./client.js');
+const { get, post, put, isNetworkError } = await import('./client.js');
 
 beforeEach(() => {
   mockInstance.get.mockReset();
@@ -138,5 +138,35 @@ describe('interceptor 401', () => {
     const error = { response: { status: 500 } };
 
     await expect(errorInterceptor(error)).rejects.toEqual(error);
+  });
+});
+
+describe('isNetworkError', () => {
+  it('devuelve true cuando no hay response (backend caído, sin respuesta)', () => {
+    expect(isNetworkError({ response: undefined })).toBe(true);
+  });
+
+  it('devuelve true para ERR_NETWORK', () => {
+    expect(isNetworkError({ response: undefined, code: 'ERR_NETWORK' })).toBe(true);
+  });
+
+  it('devuelve true para ERR_CONNECTION_REFUSED', () => {
+    expect(isNetworkError({ response: undefined, code: 'ERR_CONNECTION_REFUSED' })).toBe(true);
+  });
+
+  it('devuelve true para ECONNREFUSED (Node/proxy)', () => {
+    expect(isNetworkError({ response: undefined, code: 'ECONNREFUSED' })).toBe(true);
+  });
+
+  it('devuelve true cuando hay response pero el code es de red (proxy devuelve algo)', () => {
+    expect(isNetworkError({ response: { status: 502 }, code: 'ERR_NETWORK' })).toBe(true);
+  });
+
+  it('devuelve false cuando hay response HTTP real del backend', () => {
+    expect(isNetworkError({ response: { status: 401 } })).toBe(false);
+  });
+
+  it('devuelve false para error 500 del backend', () => {
+    expect(isNetworkError({ response: { status: 500 } })).toBe(false);
   });
 });
