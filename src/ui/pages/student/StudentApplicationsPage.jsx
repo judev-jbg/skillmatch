@@ -15,25 +15,49 @@ function StudentApplicationsPage() {
 
   return (
     <div>
-      <h1>Mis postulaciones</h1>
+      <div className="page-header">
+        <h1 className="page-title">Mis postulaciones</h1>
+      </div>
 
-      {loading && <p>Cargando...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
       {!loading && applications.length === 0 && (
-        <p>No has aplicado a ningún proyecto todavía.</p>
+        <div className="empty-state">
+          <p className="empty-state__text">No has aplicado a ningún proyecto todavía.</p>
+        </div>
       )}
 
-      {!loading && applications.map((app) => (
-        <article key={app.id}>
-          <h2>{app.project_title}</h2>
-          <span>{new Date(app.created_at).toLocaleDateString()}</span>
-          <span>{app.compatibility_score}</span>
-          <span>{app.status}</span>
-          {app.status === 'approved' && (
-            <Link to={`/student/assignments/${app.id}`}>Ver assignment</Link>
-          )}
-        </article>
-      ))}
+      {!loading && (
+        <div className="item-list">
+          {applications.map((app) => (
+            <div key={app.id} className="card card--accent">
+              <div className="card__header">
+                <div>
+                  <h2 className="card__title">{app.project_title}</h2>
+                  <p className="card__subtitle font-mono">
+                    {new Date(app.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className={`badge${app.status === 'approved' ? ' badge--accent' : app.status === 'rejected' ? ' badge--error' : ''}`}>
+                  {app.status}
+                </span>
+              </div>
+              {app.compatibility_score != null && (
+                <p className="card__body">
+                  Compatibilidad: <span className="score">{app.compatibility_score}</span>
+                </p>
+              )}
+              {app.status === 'approved' && (
+                <div className="card__footer">
+                  <Link to={`/student/assignments/${app.id}`} className="btn btn--primary btn--sm">
+                    Ver assignment
+                  </Link>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

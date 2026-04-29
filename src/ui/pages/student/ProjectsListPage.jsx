@@ -28,13 +28,16 @@ function ProjectsListPage() {
 
   return (
     <div>
-      <h1>Proyectos disponibles</h1>
+      <div className="page-header">
+        <h1 className="page-title">Proyectos disponibles</h1>
+      </div>
 
-      <div>
-        <label>
-          Estado
+      <div className="toolbar">
+        <div className="toolbar__group">
+          <label className="form-label">Estado</label>
           <select
             aria-label="Estado"
+            className="form-select"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           >
@@ -42,12 +45,13 @@ function ProjectsListPage() {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label>
-          Skill
+        <div className="toolbar__group">
+          <label className="form-label">Skill</label>
           <select
             aria-label="Skill"
+            className="form-select"
             value={skillId}
             onChange={(e) => setSkillId(e.target.value)}
           >
@@ -56,31 +60,44 @@ function ProjectsListPage() {
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
-        </label>
+        </div>
       </div>
 
-      {loading && <p>Cargando...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
       {!loading && projects.length === 0 && (
-        <p>No hay proyectos que coincidan con los filtros.</p>
+        <div className="empty-state">
+          <p className="empty-state__text">No hay proyectos que coincidan con los filtros.</p>
+        </div>
       )}
 
-      {!loading && projects.map((project) => (
-        <Link key={project.id} to={`/student/projects/${project.id}`}>
-          <article>
-            <h2>{project.title}</h2>
-            <p>{project.description}</p>
-            <span>{project.ngo?.name}</span>
-            <span>{project.modality}</span>
-            <span>{project.deadline}</span>
-            <ul>
-              {project.skills?.map((s) => (
-                <li key={s.id}>{s.name}</li>
-              ))}
-            </ul>
-          </article>
-        </Link>
-      ))}
+      {!loading && (
+        <div className="card-grid">
+          {projects.map((project) => (
+            <Link key={project.id} to={`/student/projects/${project.id}`} className="card card--interactive">
+              <div className="card__header">
+                <div>
+                  <h2 className="card__title">{project.title}</h2>
+                  <p className="card__subtitle">{project.ngo?.name}</p>
+                </div>
+                <span className="badge">{project.modality}</span>
+              </div>
+              <div className="card__body">
+                <p>{project.description}</p>
+              </div>
+              <div className="card__meta">
+                {project.skills?.map((s) => (
+                  <span key={s.id} className="skill-tag">{s.name}</span>
+                ))}
+              </div>
+              <div className="card__footer">
+                <span className="font-mono text-sm text-muted">{project.deadline}</span>
+                <span className="badge">{project.status}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

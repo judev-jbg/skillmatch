@@ -37,37 +37,65 @@ function NgoProjectAssignmentPage() {
 
   return (
     <div>
-      <h1>Asignación del proyecto</h1>
+      <div className="page-header">
+        <h1 className="page-title">Asignación del proyecto</h1>
+      </div>
 
-      {errorMsg && <p role="alert">{errorMsg}</p>}
+      {errorMsg && (
+        <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-5)' }}>
+          {errorMsg}
+        </div>
+      )}
 
-      {loading && <p>Cargando...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
       {!loading && assignment && (
-        <section>
-          <h2>Candidato seleccionado</h2>
-          <p>{assignment.student_name}</p>
-          <p>{assignment.student_email}</p>
-          <p>{assignment.start_date}</p>
-        </section>
+        <div className="card card--elevated card--accent" style={{ maxWidth: '480px' }}>
+          <div className="card__header">
+            <div>
+              <h2 className="card__title">{assignment.student_name}</h2>
+              <p className="card__subtitle">{assignment.student_email}</p>
+            </div>
+            <span className="badge badge--accent">Asignado</span>
+          </div>
+          <div className="card__footer">
+            <span className="text-muted text-sm font-mono">{assignment.start_date}</span>
+          </div>
+        </div>
       )}
 
       {!loading && !assignment && approvedCandidates.length === 0 && (
-        <p>No hay candidatos aprobados para este proyecto.</p>
+        <div className="empty-state">
+          <p className="empty-state__text">No hay candidatos aprobados para este proyecto.</p>
+        </div>
       )}
 
       {!loading && !assignment && approvedCandidates.length > 0 && (
-        <section>
-          <h2>Candidatos aprobados</h2>
-          {approvedCandidates.map((app) => (
-            <article key={app.id}>
-              <p>{app.student.name}</p>
-              <p>{app.student.email}</p>
-              <p>{app.compatibility_score}</p>
-              <button onClick={() => handleSelect(app.id)}>Seleccionar</button>
-            </article>
-          ))}
-        </section>
+        <div className="section">
+          <div className="section__header">
+            <h2 className="section__title">Candidatos aprobados</h2>
+          </div>
+          <div className="item-list">
+            {approvedCandidates.map((app) => (
+              <div key={app.id} className="card">
+                <div className="card__header">
+                  <div>
+                    <h3 className="card__title">{app.student.name}</h3>
+                    <p className="card__subtitle">{app.student.email}</p>
+                  </div>
+                  {app.compatibility_score != null && (
+                    <span className="score font-mono">{app.compatibility_score}</span>
+                  )}
+                </div>
+                <div className="card__footer">
+                  <button className="btn btn--primary btn--sm" onClick={() => handleSelect(app.id)}>
+                    Seleccionar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

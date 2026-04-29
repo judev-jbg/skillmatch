@@ -48,47 +48,78 @@ function NgoDeliverablesPage() {
 
   return (
     <div>
-      <h1>Entregables del proyecto</h1>
+      <div className="page-header">
+        <h1 className="page-title">Entregables del proyecto</h1>
+      </div>
 
-      {errorMsg && <p role="alert">{errorMsg}</p>}
+      {errorMsg && (
+        <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-5)' }}>
+          {errorMsg}
+        </div>
+      )}
 
-      <form onSubmit={handleCreate}>
-        <label>
-          Título del hito
-          <input
-            type="text"
-            aria-label="Título del hito"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-          />
-        </label>
-        <label>
-          Descripción
-          <input
-            type="text"
-            aria-label="Descripción del hito"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-          />
-        </label>
-        <button type="submit">Añadir hito</button>
-      </form>
+      <div className="card card--elevated section" style={{ maxWidth: '560px' }}>
+        <div className="card__header">
+          <h2 className="card__title">Añadir hito</h2>
+        </div>
+        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="form-field">
+            <label className="form-label">Título del hito</label>
+            <input
+              type="text"
+              aria-label="Título del hito"
+              className="form-input"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Descripción</label>
+            <input
+              type="text"
+              aria-label="Descripción del hito"
+              className="form-input"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+            />
+          </div>
+          <div>
+            <button type="submit" className="btn btn--primary">Añadir hito</button>
+          </div>
+        </form>
+      </div>
 
-      {loading && <p>Cargando...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
-      {!loading && deliverables.map((d) => (
-        <article key={d.id}>
-          <h3>{d.title}</h3>
-          <p>{d.status}</p>
-          {d.description && <p>{d.description}</p>}
-          {d.status === 'in_review' && (
-            <>
-              <button onClick={() => handleReview(d.id, 'approved')}>Aprobar</button>
-              <button onClick={() => handleReview(d.id, 'rejected')}>Rechazar</button>
-            </>
-          )}
-        </article>
-      ))}
+      {!loading && (
+        <div className="item-list">
+          {deliverables.map((d) => (
+            <div key={d.id} className="card">
+              <div className="card__header">
+                <h3 className="card__title">{d.title}</h3>
+                <span className={`badge${d.status === 'approved' ? ' badge--success' : d.status === 'rejected' ? ' badge--error' : d.status === 'in_review' ? ' badge--warning' : ''}`}>
+                  {d.status}
+                </span>
+              </div>
+              {d.description && (
+                <div className="card__body"><p>{d.description}</p></div>
+              )}
+              {d.status === 'in_review' && (
+                <div className="card__footer">
+                  <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                    <button className="btn btn--primary btn--sm" onClick={() => handleReview(d.id, 'approved')}>
+                      Aprobar
+                    </button>
+                    <button className="btn btn--danger btn--sm" onClick={() => handleReview(d.id, 'rejected')}>
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

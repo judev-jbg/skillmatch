@@ -72,53 +72,67 @@ function StudentProfilePage() {
 
   const availableSkills = allSkills.filter((s) => !skills.some((us) => us.id === s.id));
 
-  if (loadError) return <p>{loadError}</p>;
-  if (!profile) return <p>Cargando...</p>;
+  if (loadError) return <div className="alert alert--error">{loadError}</div>;
+  if (!profile) return <p className="loading">Cargando...</p>;
 
   return (
     <div>
-      <h1>Mi perfil</h1>
+      <div className="page-header">
+        <h1 className="page-title">Mi perfil</h1>
+      </div>
 
-      <section>
-        <p>{profile.name}</p>
-        <p>{profile.email}</p>
+      <div className="card card--elevated section">
+        <div className="card__header">
+          <div>
+            <h2 className="card__title">{profile.name}</h2>
+            <p className="card__subtitle">{profile.email}</p>
+          </div>
+        </div>
+        <div className="card__body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <label className="form-checkbox">
+            <input
+              type="checkbox"
+              className="form-checkbox__input"
+              aria-label="Disponibilidad"
+              checked={disponibilidad}
+              onChange={(e) => setDisponibilidad(e.target.checked)}
+            />
+            <span className="form-checkbox__label">Disponible para proyectos</span>
+          </label>
 
-        <label>
-          <input
-            type="checkbox"
-            aria-label="Disponibilidad"
-            checked={disponibilidad}
-            onChange={(e) => setDisponibilidad(e.target.checked)}
-          />
-          Disponibilidad
-        </label>
+          <div className="form-field">
+            <label className="form-label">Portfolio URL</label>
+            <input
+              type="url"
+              className="form-input"
+              value={portfolioUrl}
+              onChange={(e) => setPortfolioUrl(e.target.value)}
+            />
+          </div>
 
-        <label>
-          Portfolio URL
-          <input
-            type="url"
-            value={portfolioUrl}
-            onChange={(e) => setPortfolioUrl(e.target.value)}
-          />
-        </label>
+          {successMsg && <div className="alert alert--success" role="status">{successMsg}</div>}
+          {errorMsg && <div className="alert alert--error" role="alert">{errorMsg}</div>}
+        </div>
+        <div className="card__footer">
+          <button type="button" className="btn btn--primary" onClick={handleSaveProfile}>
+            Guardar perfil
+          </button>
+        </div>
+      </div>
 
-        {successMsg && <p role="status">{successMsg}</p>}
-        {errorMsg && <p role="alert">{errorMsg}</p>}
+      <div className="section">
+        <div className="section__header">
+          <h2 className="section__title">Skills</h2>
+        </div>
 
-        <button type="button" onClick={handleSaveProfile}>
-          Guardar perfil
-        </button>
-      </section>
-
-      <section>
-        <h2>Skills</h2>
-
-        <ul>
+        <div className="item-list" style={{ marginBottom: 'var(--space-5)' }}>
           {skills.map((skill) => (
-            <li key={skill.id}>
-              <span>{skill.name}</span>
+            <div key={skill.id} className="card" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-3) var(--space-4)' }}>
+              <span className="skill-tag skill-tag--accent">{skill.name}</span>
               <select
                 aria-label={`Nivel de ${skill.name}`}
+                className="form-select"
+                style={{ maxWidth: '160px' }}
                 value={skill.level}
                 onChange={(e) => handleChangeLevel(skill.id, e.target.value)}
               >
@@ -126,18 +140,19 @@ function StudentProfilePage() {
                   <option key={l} value={l}>{l}</option>
                 ))}
               </select>
-              <button type="button" onClick={() => handleRemoveSkill(skill.id)}>
+              <button type="button" className="btn btn--danger btn--sm" onClick={() => handleRemoveSkill(skill.id)}>
                 Eliminar
               </button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
 
-        <div>
-          <label>
-            Agregar skill
+        <div className="card" style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', alignItems: 'flex-end', padding: 'var(--space-4) var(--space-5)' }}>
+          <div className="toolbar__group">
+            <label className="form-label">Agregar skill</label>
             <select
               aria-label="Agregar skill"
+              className="form-select"
               value={newSkillId}
               onChange={(e) => setNewSkillId(e.target.value)}
             >
@@ -146,12 +161,13 @@ function StudentProfilePage() {
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
-          </label>
+          </div>
 
-          <label>
-            Nivel
+          <div className="toolbar__group">
+            <label className="form-label">Nivel</label>
             <select
               aria-label="Nivel"
+              className="form-select"
               value={newSkillLevel}
               onChange={(e) => setNewSkillLevel(e.target.value)}
             >
@@ -159,13 +175,13 @@ function StudentProfilePage() {
                 <option key={l} value={l}>{l}</option>
               ))}
             </select>
-          </label>
+          </div>
 
-          <button type="button" onClick={handleAddSkill}>
+          <button type="button" className="btn btn--secondary" onClick={handleAddSkill}>
             Agregar
           </button>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

@@ -9,30 +9,43 @@ function DeliverableItem({ deliverable, onStart, onSubmit }) {
   const [fileUrl, setFileUrl] = useState('');
 
   return (
-    <article>
-      <h3>{deliverable.title}</h3>
-      <p>{deliverable.status}</p>
-      {deliverable.description && <p>{deliverable.description}</p>}
+    <div className="card card--accent">
+      <div className="card__header">
+        <h3 className="card__title">{deliverable.title}</h3>
+        <span className={`badge${deliverable.status === 'approved' ? ' badge--success' : deliverable.status === 'rejected' ? ' badge--error' : deliverable.status === 'in_review' ? ' badge--warning' : ''}`}>
+          {deliverable.status}
+        </span>
+      </div>
+      {deliverable.description && (
+        <div className="card__body"><p>{deliverable.description}</p></div>
+      )}
 
       {deliverable.status === 'pending' && (
-        <button onClick={() => onStart(deliverable.id)}>Iniciar</button>
+        <div className="card__footer">
+          <button className="btn btn--secondary btn--sm" onClick={() => onStart(deliverable.id)}>
+            Iniciar
+          </button>
+        </div>
       )}
 
       {deliverable.status === 'in_progress' && (
-        <div>
-          <label>
-            URL del archivo
+        <div className="card__footer" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 'var(--space-3)' }}>
+          <div className="form-field">
+            <label className="form-label">URL del archivo</label>
             <input
               type="text"
               aria-label="URL del archivo"
+              className="form-input"
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
             />
-          </label>
-          <button onClick={() => onSubmit(deliverable.id, fileUrl)}>Enviar a revisión</button>
+          </div>
+          <button className="btn btn--primary btn--sm" onClick={() => onSubmit(deliverable.id, fileUrl)}>
+            Enviar a revisión
+          </button>
         </div>
       )}
-    </article>
+    </div>
   );
 }
 
@@ -106,60 +119,94 @@ function StudentAssignmentPage() {
     );
   }
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <p className="loading">Cargando...</p>;
 
   return (
     <div>
-      <h1>{assignment?.project_title}</h1>
-      <p>{assignment?.start_date}</p>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{assignment?.project_title}</h1>
+          <p className="page-subtitle font-mono">{assignment?.start_date}</p>
+        </div>
+        <span className="badge">{assignment?.project_status}</span>
+      </div>
 
       {assignment?.project_status === 'assigned' && (
-        <button onClick={handleAccept}>Aceptar</button>
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <button className="btn btn--primary btn--lg" onClick={handleAccept}>
+            Aceptar proyecto
+          </button>
+        </div>
       )}
 
       {assignment?.project_status === 'completed' && assignment?.certificate_id && (
-        <button onClick={handleDownloadCertificate}>Descargar certificado</button>
+        <div style={{ marginBottom: 'var(--space-4)' }}>
+          <button className="btn btn--primary" onClick={handleDownloadCertificate}>
+            Descargar certificado
+          </button>
+        </div>
       )}
-      {certError && <p role="alert">{certError}</p>}
+      {certError && (
+        <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-4)' }}>
+          {certError}
+        </div>
+      )}
 
       {assignment?.project_status === 'completed' && !reviewSent && (
-        <section>
-          <h2>Dejar valoración</h2>
-          <label>
-            Valoración
-            <input
-              type="number"
-              aria-label="Valoración"
-              min={1}
-              max={5}
-              value={reviewRating}
-              onChange={(e) => setReviewRating(e.target.value)}
-            />
-          </label>
-          <label>
-            Comentario
-            <textarea
-              aria-label="Comentario"
-              value={reviewComment}
-              onChange={(e) => setReviewComment(e.target.value)}
-            />
-          </label>
-          {reviewError && <p role="alert">{reviewError}</p>}
-          <button onClick={handleSendReview}>Enviar valoración</button>
-        </section>
+        <div className="card card--elevated section">
+          <div className="card__header">
+            <h2 className="card__title">Dejar valoración</h2>
+          </div>
+          <div className="card__body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            <div className="form-field">
+              <label className="form-label">Valoración (1–5)</label>
+              <input
+                type="number"
+                aria-label="Valoración"
+                className="form-input"
+                min={1}
+                max={5}
+                value={reviewRating}
+                onChange={(e) => setReviewRating(e.target.value)}
+                style={{ maxWidth: '100px' }}
+              />
+            </div>
+            <div className="form-field">
+              <label className="form-label">Comentario</label>
+              <textarea
+                aria-label="Comentario"
+                className="form-textarea"
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+              />
+            </div>
+            {reviewError && (
+              <div className="alert alert--error" role="alert">{reviewError}</div>
+            )}
+          </div>
+          <div className="card__footer">
+            <button className="btn btn--primary" onClick={handleSendReview}>
+              Enviar valoración
+            </button>
+          </div>
+        </div>
       )}
 
-      <section>
-        <h2>Entregables</h2>
-        {deliverables.map((d) => (
-          <DeliverableItem
-            key={d.id}
-            deliverable={d}
-            onStart={handleStart}
-            onSubmit={handleSubmit}
-          />
-        ))}
-      </section>
+      <div className="section">
+        <div className="section__header">
+          <h2 className="section__title">Entregables</h2>
+        </div>
+        <div className="item-list">
+          {deliverables.map((d) => (
+            <DeliverableItem
+              key={d.id}
+              deliverable={d}
+              onStart={handleStart}
+              onSubmit={handleSubmit}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

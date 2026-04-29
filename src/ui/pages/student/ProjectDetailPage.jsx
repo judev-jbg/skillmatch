@@ -27,31 +27,64 @@ function ProjectDetailPage() {
     }
   }
 
-  if (!project) return <p>Cargando...</p>;
+  if (!project) return <p className="loading">Cargando...</p>;
 
   return (
     <div>
-      <h1>{project.title}</h1>
-      <p>{project.description}</p>
-      <p>{project.objectives}</p>
-      <span>{project.estimated_hours}</span>
-      <span>{project.deadline}</span>
-      <span>{project.modality}</span>
-      <span>{project.status}</span>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{project.title}</h1>
+          <p className="page-subtitle">{project.ngo?.name}</p>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+          <span className="badge">{project.modality}</span>
+          <span className="badge">{project.status}</span>
+        </div>
+      </div>
 
-      <ul>
-        {project.skills?.map((s) => (
-          <li key={s.id}>
-            {s.name} — {s.required_level}
-          </li>
-        ))}
-      </ul>
+      <div className="card card--elevated" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="card__body">
+          <p>{project.description}</p>
+          {project.objectives && (
+            <>
+              <hr className="divider" />
+              <p>{project.objectives}</p>
+            </>
+          )}
+        </div>
+        <div className="card__footer">
+          <span className="text-muted text-sm">
+            Horas estimadas: <span className="font-mono">{project.estimated_hours}</span>
+          </span>
+          <span className="text-muted text-sm font-mono">{project.deadline}</span>
+        </div>
+      </div>
 
-      {errorMsg && <p role="alert">{errorMsg}</p>}
+      {project.skills?.length > 0 && (
+        <div className="section">
+          <div className="section__header">
+            <h2 className="section__title">Skills requeridas</h2>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            {project.skills.map((s) => (
+              <span key={s.id} className="skill-tag">
+                {s.name}
+                <span className="skill-tag__level">· {s.required_level}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-4)' }}>
+          {errorMsg}
+        </div>
+      )}
 
       {project.status === 'pending' && (
-        <button type="button" onClick={handleApply} disabled={applied}>
-          {applied ? 'Ya has aplicado' : 'Aplicar'}
+        <button type="button" className="btn btn--primary btn--lg" onClick={handleApply} disabled={applied}>
+          {applied ? 'Ya has aplicado' : 'Aplicar a este proyecto'}
         </button>
       )}
     </div>
