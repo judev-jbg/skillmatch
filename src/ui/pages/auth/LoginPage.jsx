@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import useAuthStore from '../../hooks/useAuthStore';
 import { ROLE_HOME } from '../../router/AppRouter';
+import { isNetworkError } from '../../../infrastructure/api/client.js';
 
 function LoginPage() {
   const user = useAuthStore((s) => s.user);
@@ -28,12 +29,12 @@ function LoginPage() {
       const role = useAuthStore.getState().user?.role;
       navigate(ROLE_HOME[role] ?? '/login', { replace: true });
     } catch (err) {
-      if (!err?.response) {
+      if (isNetworkError(err)) {
         setOffline(true);
       } else {
         setOffline(false);
         setError(
-          err.response.status === 401
+          err.response?.status === 401
             ? 'Credenciales inválidas'
             : 'Error al iniciar sesión',
         );

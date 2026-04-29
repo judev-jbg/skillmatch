@@ -28,6 +28,21 @@ client.interceptors.response.use(
   },
 );
 
+const NETWORK_CODES = new Set(['ERR_NETWORK', 'ERR_CONNECTION_REFUSED', 'ECONNREFUSED', 'ECONNABORTED', 'ERR_INTERNET_DISCONNECTED']);
+
+/**
+ * Devuelve true cuando el error indica que el servidor no está accesible
+ * (sin respuesta del backend, o respuesta de red/proxy sin datos de la API).
+ *
+ * @param {unknown} err
+ * @returns {boolean}
+ */
+export function isNetworkError(err) {
+  if (!err?.response) return true;
+  if (NETWORK_CODES.has(err?.code)) return true;
+  return false;
+}
+
 /**
  * Realiza una petición GET.
  *
