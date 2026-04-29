@@ -15,24 +15,47 @@ function NgoProjectsPage() {
 
   return (
     <div>
-      <h1>Mis proyectos</h1>
-      <Link to="/ngo/projects/new">Nuevo proyecto</Link>
+      <div className="page-header">
+        <h1 className="page-title">Mis proyectos</h1>
+        <Link to="/ngo/projects/new" className="btn btn--primary">
+          Nuevo proyecto
+        </Link>
+      </div>
 
-      {loading && <p>Cargando...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
       {!loading && projects.length === 0 && (
-        <p>No tienes proyectos creados todavía.</p>
+        <div className="empty-state">
+          <p className="empty-state__text">No tienes proyectos creados todavía.</p>
+        </div>
       )}
 
-      {!loading && projects.map((p) => (
-        <article key={p.id}>
-          <h2>{p.title}</h2>
-          <span>{p.status}</span>
-          <span>{p.modality}</span>
-          <span>{p.deadline}</span>
-          <Link to={`/ngo/projects/${p.id}/edit`}>Editar</Link>
-        </article>
-      ))}
+      {!loading && (
+        <div className="card-grid">
+          {projects.map((p) => (
+            <div key={p.id} className="card card--elevated">
+              <div className="card__header">
+                <div>
+                  <h2 className="card__title">{p.title}</h2>
+                  <p className="card__subtitle font-mono">{p.deadline}</p>
+                </div>
+                <span className="badge">{p.modality}</span>
+              </div>
+              <div className="card__footer">
+                <span className="badge">{p.status}</span>
+                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                  <Link to={`/ngo/projects/${p.id}/candidates`} className="btn btn--secondary btn--sm">
+                    Candidatos
+                  </Link>
+                  <Link to={`/ngo/projects/${p.id}/edit`} className="btn btn--ghost btn--sm">
+                    Editar
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

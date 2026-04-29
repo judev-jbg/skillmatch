@@ -36,38 +36,50 @@ function ResetPasswordPage() {
   }
 
   return (
-    <main>
-      <h1>Restablecer contraseña</h1>
-      <form onSubmit={handleSubmit} noValidate>
-        <label htmlFor="password">
-          Nueva contraseña
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <label htmlFor="confirm">
-          Confirmar contraseña
-          <input
-            id="confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-          />
-        </label>
-        {errorMsg && (
-          <p role="alert">
-            {errorMsg}
-            {tokenExpired && (
-              <> — <Link to="/forgot-password">Solicitar nuevo enlace</Link></>
-            )}
-          </p>
-        )}
-        <button type="submit">Restablecer contraseña</button>
-      </form>
-    </main>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__brand">
+          <span className="auth-card__logo">Skill<span>Match</span></span>
+        </div>
+
+        <h1 className="auth-card__title">Restablecer contraseña</h1>
+
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          <div className="form-field">
+            <label className="form-label" htmlFor="password">Nueva contraseña</label>
+            <input
+              id="password"
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label" htmlFor="confirm">Confirmar contraseña</label>
+            <input
+              id="confirm"
+              type="password"
+              className="form-input"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+          </div>
+
+          {errorMsg && (
+            <div className="alert alert--error" role="alert">
+              {errorMsg}
+              {tokenExpired && (
+                <> — <Link to="/forgot-password" className="auth-form__link">Solicitar nuevo enlace</Link></>
+              )}
+            </div>
+          )}
+
+          <button type="submit" className="btn btn--primary">Restablecer contraseña</button>
+        </form>
+      </div>
+    </div>
   );
 }
 

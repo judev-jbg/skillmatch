@@ -1,16 +1,8 @@
-/**
- * Página de inicio de sesión.
- * Redirige al dashboard del rol correspondiente tras autenticarse.
- */
-
 import { useState } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import useAuthStore from '../../hooks/useAuthStore';
 import { ROLE_HOME } from '../../router/AppRouter';
 
-/**
- * Renderiza el formulario de login y gestiona el flujo de autenticación.
- */
 function LoginPage() {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
@@ -24,7 +16,6 @@ function LoginPage() {
 
   if (user) return <Navigate to={ROLE_HOME[user.role] ?? '/login'} replace />;
 
-  /** @param {React.SyntheticEvent} e */
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -51,46 +42,64 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <h1>Iniciar sesión</h1>
-
-      {offline && (
-        <p role="status">
-          Sin conexión con el servidor. Comprueba que el backend esté activo.
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} noValidate>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__brand">
+          <span className="auth-card__logo">Skill<span>Match</span></span>
         </div>
 
-        <div>
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
+        <h1 className="auth-card__title">Iniciar sesión</h1>
+
+        {offline && (
+          <div className="alert alert--warning" role="status">
+            Sin conexión con el servidor. Comprueba que el backend esté activo.
+          </div>
+        )}
+
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          <div className="form-field">
+            <label className="form-label" htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label" htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+          </div>
+
+          {error && (
+            <div className="alert alert--error" role="alert">{error}</div>
+          )}
+
+          <button type="submit" className="btn btn--primary" disabled={isLoading}>
+            {offline ? 'Reintentar' : 'Iniciar sesión'}
+          </button>
+        </form>
+
+        <div className="auth-form__footer" style={{ marginTop: 'var(--space-5)' }}>
+          <Link to="/forgot-password" className="auth-form__link">
+            ¿Olvidaste tu contraseña?
+          </Link>
+          <Link to="/register" className="auth-form__link">
+            Crear cuenta
+          </Link>
         </div>
-
-        {error && <p role="alert">{error}</p>}
-
-        <button type="submit" disabled={isLoading}>
-          {offline ? 'Reintentar' : 'Iniciar sesión'}
-        </button>
-      </form>
-      <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
-    </main>
+      </div>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 
 function NgoLayout() {
@@ -7,18 +7,37 @@ function NgoLayout() {
 
   return (
     <>
-      <header>
-        <span>SkillMatch</span>
-        <span>{user?.name} · ONG</span>
-        <button type="button" onClick={logout}>Cerrar sesión</button>
+      <header className="app-header">
+        <Link to="/ngo/projects" className="app-header__brand">
+          Skill<span>Match</span>
+        </Link>
+        <div className="app-header__user">
+          <span className="app-header__name">{user?.name} · ONG</span>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={logout}>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
-      <div>
-        <nav>
-          <Link to="/ngo/projects">Mis proyectos</Link>
-          <Link to="/ngo/candidates">Candidatos</Link>
-          <Link to="/ngo/profile">Mi perfil</Link>
+      <div className="app-shell">
+        <nav className="app-sidebar">
+          <NavLink
+            to="/ngo/projects"
+            className={({ isActive }) =>
+              `app-sidebar__link${isActive ? ' app-sidebar__link--active' : ''}`
+            }
+          >
+            Mis proyectos
+          </NavLink>
+          <NavLink
+            to="/ngo/profile"
+            className={({ isActive }) =>
+              `app-sidebar__link${isActive ? ' app-sidebar__link--active' : ''}`
+            }
+          >
+            Mi perfil
+          </NavLink>
         </nav>
-        <main>
+        <main className="app-main">
           <Outlet />
         </main>
       </div>

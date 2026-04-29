@@ -43,70 +43,119 @@ function AdminDashboardPage() {
 
   return (
     <div>
-      <h1>Panel de administración</h1>
+      <div className="page-header">
+        <h1 className="page-title">Panel de administración</h1>
+      </div>
+
+      {/* Diálogo de confirmación de eliminación */}
+      {pendingDeleteId && (
+        <div className="dialog-overlay">
+          <div className="dialog" role="dialog">
+            <h2 className="dialog__title">Eliminar skill</h2>
+            <p className="dialog__body">
+              Esta acción realizará una eliminación en cascada de todos los datos relacionados. Esta operación no se puede deshacer.
+            </p>
+            <div className="dialog__actions">
+              <button className="btn btn--secondary" onClick={() => setPendingDeleteId(null)}>
+                Cancelar
+              </button>
+              <button className="btn btn--danger" onClick={handleConfirmDelete}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Skills */}
-      <section>
-        <h2>Skills</h2>
+      <div className="section">
+        <div className="section__header">
+          <h2 className="section__title">Skills</h2>
+        </div>
 
-        {skillError && <p role="alert">{skillError}</p>}
-
-        <form onSubmit={handleCreateSkill}>
-          <label>
-            Nombre de la skill
-            <input
-              type="text"
-              aria-label="Nombre de la skill"
-              value={newSkillName}
-              onChange={(e) => setNewSkillName(e.target.value)}
-            />
-          </label>
-          <label>
-            Categoría
-            <select
-              aria-label="Categoría"
-              value={newSkillCategory}
-              onChange={(e) => setNewSkillCategory(e.target.value)}
-            >
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </label>
-          <button type="submit">Añadir skill</button>
-        </form>
-
-        {pendingDeleteId && (
-          <div role="dialog">
-            <p>Esta acción realizará una eliminación en cascada de todos los datos relacionados.</p>
-            <button onClick={handleConfirmDelete}>Confirmar</button>
-            <button onClick={() => setPendingDeleteId(null)}>Cancelar</button>
+        {skillError && (
+          <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-4)' }}>
+            {skillError}
           </div>
         )}
 
-        <ul>
+        <div className="card card--elevated" style={{ maxWidth: '560px', marginBottom: 'var(--space-6)' }}>
+          <form onSubmit={handleCreateSkill} style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div className="toolbar__group" style={{ flex: 2 }}>
+              <label className="form-label">Nombre de la skill</label>
+              <input
+                type="text"
+                aria-label="Nombre de la skill"
+                className="form-input"
+                value={newSkillName}
+                onChange={(e) => setNewSkillName(e.target.value)}
+              />
+            </div>
+            <div className="toolbar__group" style={{ flex: 1 }}>
+              <label className="form-label">Categoría</label>
+              <select
+                aria-label="Categoría"
+                className="form-select"
+                value={newSkillCategory}
+                onChange={(e) => setNewSkillCategory(e.target.value)}
+              >
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <button type="submit" className="btn btn--primary">Añadir</button>
+          </form>
+        </div>
+
+        <div className="item-list">
           {skills.map((s) => (
-            <li key={s.id}>
-              <span>{s.name}</span>
-              <span>{s.category}</span>
-              <button onClick={() => setPendingDeleteId(s.id)}>Eliminar</button>
-            </li>
+            <div key={s.id} className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-3) var(--space-5)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <span className="skill-tag">{s.name}</span>
+                <span className="badge">{s.category}</span>
+              </div>
+              <button className="btn btn--danger btn--sm" onClick={() => setPendingDeleteId(s.id)}>
+                Eliminar
+              </button>
+            </div>
           ))}
-        </ul>
-      </section>
+        </div>
+      </div>
 
       {/* ONGs */}
-      <section>
-        <h2>ONGs</h2>
-        {ngos.map((n) => (
-          <article key={n.id}>
-            <p>{n.organization_name}</p>
-            <p>{n.email}</p>
-            <p>{n.verified ? 'Verificada' : 'Pendiente'}</p>
-            {!n.verified && (
-              <button onClick={() => handleVerifyNgo(n.id)}>Verificar</button>
-            )}
-          </article>
-        ))}
-      </section>
+      <div className="section">
+        <div className="section__header">
+          <h2 className="section__title">ONGs pendientes de verificación</h2>
+        </div>
+
+        {ngos.length === 0 && (
+          <div className="empty-state">
+            <p className="empty-state__text">No hay ONGs pendientes de verificación.</p>
+          </div>
+        )}
+
+        <div className="item-list">
+          {ngos.map((n) => (
+            <div key={n.id} className="card">
+              <div className="card__header">
+                <div>
+                  <h3 className="card__title">{n.organization_name}</h3>
+                  <p className="card__subtitle">{n.email}</p>
+                </div>
+                <span className={`badge${n.verified ? ' badge--success' : ' badge--warning'}`}>
+                  {n.verified ? 'Verificada' : 'Pendiente'}
+                </span>
+              </div>
+              {!n.verified && (
+                <div className="card__footer">
+                  <button className="btn btn--primary btn--sm" onClick={() => handleVerifyNgo(n.id)}>
+                    Verificar
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -39,67 +39,80 @@ function NgoProfilePage() {
     }
   }
 
-  if (loadError) return <p>{loadError}</p>;
-  if (!profile) return <p>Cargando...</p>;
+  if (loadError) return <div className="alert alert--error">{loadError}</div>;
+  if (!profile) return <p className="loading">Cargando...</p>;
 
   return (
     <div>
-      <h1>Mi perfil</h1>
+      <div className="page-header">
+        <h1 className="page-title">Mi perfil</h1>
+        {profile.verified
+          ? <span className="badge badge--success">ONG verificada</span>
+          : <span className="badge badge--warning">Pendiente de verificación</span>
+        }
+      </div>
 
       {!profile.verified && (
-        <p role="status">Tu organización está pendiente de verificación por el administrador.</p>
+        <div className="alert alert--warning" role="status" style={{ marginBottom: 'var(--space-6)' }}>
+          Tu organización está pendiente de verificación por el administrador.
+        </div>
       )}
 
-      {profile.verified && (
-        <p>ONG verificada</p>
-      )}
+      <div className="card card--elevated" style={{ maxWidth: '560px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+          <div className="form-field">
+            <label className="form-label">Nombre de contacto</label>
+            <input
+              type="text"
+              aria-label="Nombre de contacto"
+              className="form-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
-      <label>
-        Nombre de contacto
-        <input
-          type="text"
-          aria-label="Nombre de contacto"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
+          <div className="form-field">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              aria-label="Email"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-      <label>
-        Email
-        <input
-          type="email"
-          aria-label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
+          <div className="form-field">
+            <label className="form-label">Nombre de organización</label>
+            <input
+              type="text"
+              aria-label="Nombre de organización"
+              className="form-input"
+              value={organizationName}
+              onChange={(e) => setOrganizationName(e.target.value)}
+            />
+          </div>
 
-      <label>
-        Nombre de organización
-        <input
-          type="text"
-          aria-label="Nombre de organización"
-          value={organizationName}
-          onChange={(e) => setOrganizationName(e.target.value)}
-        />
-      </label>
+          <div className="form-field">
+            <label className="form-label">Área</label>
+            <input
+              type="text"
+              aria-label="Área"
+              className="form-input"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+            />
+          </div>
 
-      <label>
-        Área
-        <input
-          type="text"
-          aria-label="Área"
-          value={area}
-          onChange={(e) => setArea(e.target.value)}
-        />
-      </label>
-
-      {successMsg && <p role="status">{successMsg}</p>}
-      {errorMsg && <p role="alert">{errorMsg}</p>}
-
-      <button type="button" onClick={handleSave}>
-        Guardar perfil
-      </button>
+          {successMsg && <div className="alert alert--success" role="status">{successMsg}</div>}
+          {errorMsg && <div className="alert alert--error" role="alert">{errorMsg}</div>}
+        </div>
+        <div className="card__footer" style={{ marginTop: 'var(--space-5)' }}>
+          <button type="button" className="btn btn--primary" onClick={handleSave}>
+            Guardar perfil
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

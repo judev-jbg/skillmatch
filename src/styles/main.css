@@ -1,0 +1,31 @@
+/* ─────────────────────────────────────────────
+   SkillMatch — Sistema de diseño
+   Orden de importación:
+     1. Tokens (custom properties)
+     2. Reset + base
+     3. Tipografía utilitaria
+     4. Bloques (BEM)
+     5. Layouts
+───────────────────────────────────────────── */
+
+/* 1 · Tokens */
+@import './base/tokens.css';
+
+/* 2 · Reset */
+@import './base/reset.css';
+
+/* 3 · Tipografía */
+@import './base/typography.css';
+
+/* 4 · Bloques */
+@import './blocks/button.css';
+@import './blocks/form.css';
+@import './blocks/card.css';
+@import './blocks/alert.css';
+@import './blocks/dialog.css';
+@import './blocks/skill-tag.css';
+
+/* 5 · Layouts */
+@import './layouts/auth.css';
+@import './layouts/app-shell.css';
+@import './layouts/page.css';

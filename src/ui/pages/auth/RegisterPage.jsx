@@ -1,15 +1,7 @@
-/**
- * Página de registro de nuevos usuarios.
- * Soporta roles student y ngo, con campos adicionales para ONG.
- */
-
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { registerUseCase } from '../../../application/auth/registerUseCase';
 
-/**
- * Renderiza el formulario de registro y gestiona el flujo de creación de cuenta.
- */
 function RegisterPage() {
   const navigate = useNavigate();
 
@@ -23,7 +15,6 @@ function RegisterPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  /** @param {React.SyntheticEvent} e */
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -54,83 +45,107 @@ function RegisterPage() {
   }
 
   return (
-    <main>
-      <h1>Crear cuenta</h1>
-
-      <form onSubmit={handleSubmit} noValidate>
-        <div>
-          <label htmlFor="name">Nombre</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="name"
-          />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__brand">
+          <span className="auth-card__logo">Skill<span>Match</span></span>
         </div>
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-          {emailError && <span>{emailError}</span>}
+        <h1 className="auth-card__title">Crear cuenta</h1>
+
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          <div className="form-field">
+            <label className="form-label" htmlFor="name">Nombre</label>
+            <input
+              id="name"
+              type="text"
+              className="form-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="name"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label" htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              className={`form-input${emailError ? ' form-input--error' : ''}`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+            {emailError && <span className="form-hint form-hint--error">{emailError}</span>}
+          </div>
+
+          <div className="form-field">
+            <label className="form-label" htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label" htmlFor="role">Rol</label>
+            <select
+              id="role"
+              className="form-select"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="student">Estudiante</option>
+              <option value="ngo">ONG</option>
+            </select>
+          </div>
+
+          {role === 'ngo' && (
+            <>
+              <div className="form-field">
+                <label className="form-label" htmlFor="organizationName">Nombre de organización</label>
+                <input
+                  id="organizationName"
+                  type="text"
+                  className="form-input"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label" htmlFor="area">Área</label>
+                <input
+                  id="area"
+                  type="text"
+                  className="form-input"
+                  value={area}
+                  onChange={(e) => setArea(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          {error && (
+            <div className="alert alert--error" role="alert">{error}</div>
+          )}
+
+          <button type="submit" className="btn btn--primary" disabled={isLoading}>
+            Registrarse
+          </button>
+        </form>
+
+        <div className="auth-form__footer" style={{ marginTop: 'var(--space-5)', justifyContent: 'center' }}>
+          <Link to="/login" className="auth-form__link">
+            ¿Ya tienes cuenta? Iniciar sesión
+          </Link>
         </div>
-
-        <div>
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="role">Rol</label>
-          <select id="role" value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="student">Estudiante</option>
-            <option value="ngo">ONG</option>
-          </select>
-        </div>
-
-        {role === 'ngo' && (
-          <>
-            <div>
-              <label htmlFor="organizationName">Nombre de organización</label>
-              <input
-                id="organizationName"
-                type="text"
-                value={organizationName}
-                onChange={(e) => setOrganizationName(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="area">Área</label>
-              <input
-                id="area"
-                type="text"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-              />
-            </div>
-          </>
-        )}
-
-        {error && <p role="alert">{error}</p>}
-
-        <button type="submit" disabled={isLoading}>
-          Registrarse
-        </button>
-      </form>
-    </main>
+      </div>
+    </div>
   );
 }
 

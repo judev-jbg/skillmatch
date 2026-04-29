@@ -33,26 +33,56 @@ function NgoProjectCandidatesPage() {
 
   return (
     <div>
-      <h1>Candidatos del proyecto</h1>
+      <div className="page-header">
+        <h1 className="page-title">Candidatos del proyecto</h1>
+      </div>
 
-      {errorMsg && <p role="alert">{errorMsg}</p>}
-
-      {loading && <p>Cargando...</p>}
-
-      {!loading && applications.length === 0 && (
-        <p>No hay candidatos para este proyecto.</p>
+      {errorMsg && (
+        <div className="alert alert--error" role="alert" style={{ marginBottom: 'var(--space-5)' }}>
+          {errorMsg}
+        </div>
       )}
 
-      {!loading && applications.map((app) => (
-        <article key={app.id}>
-          <p>{app.student.name}</p>
-          <p>{app.student.email}</p>
-          <p>{app.compatibility_score}</p>
-          <p>{app.status}</p>
-          <button onClick={() => handleStatusChange(app.id, 'approved')}>Aprobar</button>
-          <button onClick={() => handleStatusChange(app.id, 'rejected')}>Rechazar</button>
-        </article>
-      ))}
+      {loading && <p className="loading">Cargando...</p>}
+
+      {!loading && applications.length === 0 && (
+        <div className="empty-state">
+          <p className="empty-state__text">No hay candidatos para este proyecto.</p>
+        </div>
+      )}
+
+      {!loading && (
+        <div className="item-list">
+          {applications.map((app) => (
+            <div key={app.id} className="card">
+              <div className="card__header">
+                <div>
+                  <h2 className="card__title">{app.student.name}</h2>
+                  <p className="card__subtitle">{app.student.email}</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                  {app.compatibility_score != null && (
+                    <span className="score font-mono">{app.compatibility_score}</span>
+                  )}
+                  <span className={`badge${app.status === 'approved' ? ' badge--accent' : app.status === 'rejected' ? ' badge--error' : ''}`}>
+                    {app.status}
+                  </span>
+                </div>
+              </div>
+              <div className="card__footer">
+                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                  <button className="btn btn--primary btn--sm" onClick={() => handleStatusChange(app.id, 'approved')}>
+                    Aprobar
+                  </button>
+                  <button className="btn btn--danger btn--sm" onClick={() => handleStatusChange(app.id, 'rejected')}>
+                    Rechazar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

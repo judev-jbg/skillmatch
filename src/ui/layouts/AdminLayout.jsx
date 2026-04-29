@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import useAuthStore from '../hooks/useAuthStore';
 
 function AdminLayout() {
@@ -7,17 +7,30 @@ function AdminLayout() {
 
   return (
     <>
-      <header>
-        <span>SkillMatch</span>
-        <span>{user?.name} · Admin</span>
-        <button type="button" onClick={logout}>Cerrar sesión</button>
+      <header className="app-header">
+        <Link to="/admin" className="app-header__brand">
+          Skill<span>Match</span>
+        </Link>
+        <div className="app-header__user">
+          <span className="app-header__name">{user?.name} · Admin</span>
+          <button type="button" className="btn btn--ghost btn--sm" onClick={logout}>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
-      <div>
-        <nav>
-          <Link to="/admin/skills">Gestión de skills</Link>
-          <Link to="/admin/ngos">Verificación de ONGs</Link>
+      <div className="app-shell">
+        <nav className="app-sidebar">
+          <NavLink
+            to="/admin"
+            end
+            className={({ isActive }) =>
+              `app-sidebar__link${isActive ? ' app-sidebar__link--active' : ''}`
+            }
+          >
+            Panel
+          </NavLink>
         </nav>
-        <main>
+        <main className="app-main">
           <Outlet />
         </main>
       </div>
