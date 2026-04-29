@@ -16,7 +16,11 @@ const client = axios.create({
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && window.location.pathname !== '/login') {
+    const isAuthRoute = window.location.pathname.startsWith('/login') ||
+      window.location.pathname.startsWith('/forgot-password') ||
+      window.location.pathname.startsWith('/reset-password');
+
+    if (error.response?.status === 401 && !isAuthRoute) {
       window.location.href = '/login';
       return Promise.resolve();
     }

@@ -4,8 +4,9 @@
  * Criterios de aceptación:
  * - baseURL construida desde variable de entorno VITE_API_URL
  * - withCredentials: true en cada petición
- * - 401 fuera de /login redirige a /login
- * - 401 en /login NO redirige (evita recarga de página)
+ * - 401 fuera de rutas de auth redirige a /login
+ * - 401 en /login, /forgot-password o /reset-password NO redirige
+ * - Error de red (sin response) se rechaza normalmente — permite detección offline
  * - Errores HTTP distintos de 401 se rechazan normalmente
  * - get, post y put devuelven response.data directamente
  */
@@ -94,20 +95,43 @@ describe('put', () => {
 });
 
 describe('interceptor 401', () => {
-  it('redirige a /login cuando recibe 401 y no está en /login', async () => {
-    window.location.pathname = '/dashboard';
+  it('redirige a /login cuando recibe 401 fuera de rutas de auth', async () => {
+    window.location.pathname = '/student/projects';
 
     await errorInterceptor({ response: { status: 401 } });
 
     expect(window.location.href).toBe('/login');
   });
 
-  it('NO redirige cuando recibe 401 estando ya en /login', async () => {
+  it('NO redirige cuando recibe 401 en /login', async () => {
     window.location.pathname = '/login';
     const error = { response: { status: 401 } };
 
     await expect(errorInterceptor(error)).rejects.toEqual(error);
     expect(window.location.href).not.toBe('/login');
+  });
+
+  it('NO redirige cuando recibe 401 en /forgot-password', async () => {
+    window.location.pathname = '/forgot-password';
+    const error = { response: { status: 401 } };
+
+    await expect(errorInterceptor(error)).rejects.toEqual(error);
+    expect(window.location.href).not.toBe('/login');
+  });
+
+  it('NO redirige cuando recibe 401 en /reset-password', async () => {
+    window.location.pathname = '/reset-password';
+    const error = { response: { status: 401 } };
+
+    await expect(errorInterceptor(error)).rejects.toEqual(error);
+    expect(window.location.href).not.toBe('/login');
+  });
+
+  it('rechaza error de red sin response para permitir detección offline', async () => {
+    window.location.pathname = '/login';
+    const networkError = { response: undefined, code: 'ERR_NETWORK' };
+
+    await expect(errorInterceptor(networkError)).rejects.toEqual(networkError);
   });
 
   it('rechaza el error para status distinto de 401', async () => {
