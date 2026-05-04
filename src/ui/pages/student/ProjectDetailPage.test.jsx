@@ -71,15 +71,15 @@ describe('ProjectDetailPage', () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    expect(screen.getByRole('button', { name: /^aplicar$/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^aplicar$/i })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /^aplicar a este proyecto$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^aplicar a este proyecto$/i })).not.toBeDisabled();
   });
 
   it('AC4: al clic en Aplicar llama a createApplication con el project_id', async () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    fireEvent.click(screen.getByRole('button', { name: /^aplicar$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^aplicar a este proyecto$/i }));
 
     await waitFor(() =>
       expect(createApplication).toHaveBeenCalledWith('p1')
@@ -90,7 +90,7 @@ describe('ProjectDetailPage', () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    fireEvent.click(screen.getByRole('button', { name: /^aplicar$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^aplicar a este proyecto$/i }));
 
     await screen.findByRole('button', { name: /ya has aplicado/i });
     expect(screen.getByRole('button', { name: /ya has aplicado/i })).toBeDisabled();
@@ -103,7 +103,7 @@ describe('ProjectDetailPage', () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    fireEvent.click(screen.getByRole('button', { name: /^aplicar$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^aplicar a este proyecto$/i }));
 
     await screen.findByRole('button', { name: /ya has aplicado/i });
     expect(screen.getByRole('button', { name: /ya has aplicado/i })).toBeDisabled();
@@ -114,7 +114,7 @@ describe('ProjectDetailPage', () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    expect(screen.queryByRole('button', { name: /^aplicar$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^aplicar a este proyecto$/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /ya has aplicado/i })).not.toBeInTheDocument();
   });
 
@@ -125,7 +125,7 @@ describe('ProjectDetailPage', () => {
     renderPage();
     await screen.findByText('App de reciclaje');
 
-    fireEvent.click(screen.getByRole('button', { name: /^aplicar$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^aplicar a este proyecto$/i }));
 
     await screen.findByRole('alert');
   });
