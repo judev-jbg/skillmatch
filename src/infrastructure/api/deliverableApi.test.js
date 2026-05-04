@@ -41,10 +41,10 @@ describe('deliverableApi', () => {
     expect(put).toHaveBeenCalledWith('/deliverables/del-1/start', {});
   });
 
-  it('submitDeliverable llama a PUT /deliverables/:id/submit con el archivo', () => {
-    const file = new File(['content'], 'report.pdf');
-    submitDeliverable('del-1', file);
-    expect(put).toHaveBeenCalledWith('/deliverables/del-1/submit', { file });
+  it('submitDeliverable llama a PUT /deliverables/:id/submit con file_url', () => {
+    const fileUrl = 'https://storage.example.com/report.pdf';
+    submitDeliverable('del-1', fileUrl);
+    expect(put).toHaveBeenCalledWith('/deliverables/del-1/submit', { file_url: fileUrl });
   });
 
   it('reviewDeliverable llama a PUT /deliverables/:id/review con los datos', () => {
