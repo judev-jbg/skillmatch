@@ -59,6 +59,7 @@ lerna-debug.log*
 .vite/
 .claude/
 CLAUDE.md
+AGENTS.md
 
 # Archivos de coverage de tests
 coverage
