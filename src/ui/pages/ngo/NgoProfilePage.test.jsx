@@ -104,7 +104,7 @@ describe('NgoProfilePage', () => {
     render(<NgoProfilePage />);
     await screen.findByDisplayValue('Fundación Verde');
 
-    expect(screen.getByText(/pendiente de verificación/i)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(/pendiente de verificación/i);
   });
 
   it('AC6b: no muestra aviso si la ONG está verificada', async () => {
