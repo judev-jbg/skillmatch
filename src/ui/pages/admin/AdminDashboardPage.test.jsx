@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AdminDashboardPage from './AdminDashboardPage';
@@ -61,7 +61,7 @@ describe('AdminDashboardPage — skills', () => {
     fireEvent.change(screen.getByRole('textbox', { name: /nombre de la skill/i }), {
       target: { value: 'Node.js' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /añadir skill/i }));
+    fireEvent.click(screen.getByRole('button', { name: /añadir/i }));
     await waitFor(() =>
       expect(createSkill).toHaveBeenCalledWith(expect.objectContaining({ name: 'Node.js' }))
     );
@@ -74,7 +74,7 @@ describe('AdminDashboardPage — skills', () => {
     const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i });
     fireEvent.click(deleteButtons[0]);
     expect(await screen.findByText(/eliminación en cascada/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /confirmar/i }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /eliminar/i }));
     await waitFor(() => expect(deleteSkill).toHaveBeenCalledWith('s1'));
   });
 
@@ -84,7 +84,7 @@ describe('AdminDashboardPage — skills', () => {
     const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i });
     fireEvent.click(deleteButtons[0]);
     await screen.findByText(/eliminación en cascada/i);
-    fireEvent.click(screen.getByRole('button', { name: /confirmar/i }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /eliminar/i }));
     await waitFor(() => expect(deleteSkill).toHaveBeenCalled());
     expect(screen.queryByText('React')).not.toBeInTheDocument();
   });
@@ -96,7 +96,7 @@ describe('AdminDashboardPage — skills', () => {
     fireEvent.change(screen.getByRole('textbox', { name: /nombre de la skill/i }), {
       target: { value: 'Error skill' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /añadir skill/i }));
+    fireEvent.click(screen.getByRole('button', { name: /añadir/i }));
     await screen.findByRole('alert');
   });
 });
