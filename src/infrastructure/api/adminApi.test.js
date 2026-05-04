@@ -30,8 +30,8 @@ describe('adminApi', () => {
     expect(del).toHaveBeenCalledWith('/admin/skills/skill-1');
   });
 
-  it('verifyNgo llama a PUT /admin/ngos/:userId/verify', () => {
+  it('verifyNgo llama a PUT /admin/verify-ngo/:userId', () => {
     verifyNgo('user-1');
-    expect(put).toHaveBeenCalledWith('/admin/ngos/user-1/verify', {});
+    expect(put).toHaveBeenCalledWith('/admin/verify-ngo/user-1', {});
   });
 });
