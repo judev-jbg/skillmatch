@@ -18,8 +18,8 @@ describe('reviewApi', () => {
     expect(post).toHaveBeenCalledWith('/reviews', data);
   });
 
-  it('getReviewsByUser llama a GET /reviews con user_id como query param', () => {
+  it('getReviewsByUser llama a GET /reviews/:userId con path param', () => {
     getReviewsByUser('user-1');
-    expect(get).toHaveBeenCalledWith('/reviews', { params: { user_id: 'user-1' } });
+    expect(get).toHaveBeenCalledWith('/reviews/user-1');
   });
 });
